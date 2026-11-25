@@ -48,6 +48,18 @@ body{background:#E6D9FF}
 .whats{position:fixed;bottom:20px;right:20px;width:68px;height:68px;border-radius:50%;display:flex;align-items:center;justify-content:center;text-decoration:none;z-index:99;background:linear-gradient(145deg,#2FE06B,#1EBE57 50%,#128C3A);box-shadow:0 10px 25px rgba(0,0,0,.35), inset 0 3px 6px rgba(255,255,255,.4), inset 0 -4px 8px rgba(0,0,0,.2)}
 .whats svg{width:38px;height:38px}
 .tabs,.grid,.section,.info,#precios{scroll-margin-top:90px}
+.modal{position:fixed;inset:0;background:rgba(40,20,60,.5);display:none;align-items:center;justify-content:center;z-index:200;padding:15px}
+.modal.open{display:flex}
+.modal .box{background:#fff;border-radius:20px;padding:25px;width:100%;max-width:420px;max-height:90vh;overflow:auto}
+.modal h2{color:#4B2E6B;font-size:22px;margin-bottom:15px;text-align:center}
+.modal label{display:block;font-size:13px;font-weight:700;color:#555;margin:10px 0 4px}
+.modal input,.modal select{width:100%;padding:11px 13px;border:2px solid #E6D9FF;border-radius:10px;font-size:15px;outline:none;font-family:inherit}
+.modal input:focus,.modal select:focus{border-color:#4B2E6B}
+.modal .row{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.modal .btns{display:flex;gap:10px;margin-top:18px}
+.modal .btns button{flex:1;padding:12px;border:none;border-radius:12px;font-weight:800;font-size:15px;cursor:pointer}
+.modal .cancel{background:#eee;color:#555}
+.modal .save{background:#FF9EC6;color:#4B2E6B}
 </style>
 </head>
 <body>
@@ -108,6 +120,21 @@ function setLang(lang){localStorage.setItem('bb-lang',lang);applyLang(lang);}
 function toggleLang(){setLang(localStorage.getItem('bb-lang')==='en'?'es':'en');}
 applyLang(localStorage.getItem('bb-lang')||'es');
 const _h=location.hash.replace('#','');if(['pestanas','unas','cejas'].includes(_h)){const b=document.querySelector('.tab[onclick*="show(\''+_h+'\'"]');if(b)show(_h,b);}
+</script>
+<script>
+const SVCS={'wa.classic':['Extensiones Clásicas',65],'wa.hybrid':['Volumen Híbrido',85],'wa.lift':['Lifting de Pestañas',55],'wa.manicure':['Manicure + Gel',45],'wa.acrylics':['Acrílicas',70],'wa.browdesign':['Diseño de Cejas',35],'wa.laminated':['Laminado',60]};
+const modal=document.createElement('div');modal.className='modal';modal.innerHTML='<div class="box"><h2>Reservar Cita</h2><label>Nombre</label><input id="bkNom" placeholder="Tu nombre"><label>Teléfono (WhatsApp)</label><input id="bkTel" placeholder="Ej: 3051234567"><label>Servicio</label><select id="bkServ"></select><div class="row"><div><label>Fecha</label><input type="date" id="bkFecha"></div><div><label>Hora</label><input type="time" id="bkHora"></div></div><div class="btns"><button class="cancel" onclick="closeBook()">Cancelar</button><button class="save" onclick="confirmBook()">Confirmar reserva</button></div></div>';
+document.body.appendChild(modal);
+const bkServ=document.getElementById('bkServ');
+bkServ.innerHTML='<option value="">Elegí un servicio...</option>'+Object.keys(SVCS).map(k=>'<option value="'+k+'">'+SVCS[k][0]+'</option>').join('');
+document.getElementById('bkFecha').value=new Date().toISOString().slice(0,10);
+modal.addEventListener('click',e=>{if(e.target===modal)closeBook();});
+function openBook(key){document.getElementById('bkNom').value='';document.getElementById('bkTel').value='';bkServ.value=SVCS[key]?key:'';modal.classList.add('open');}
+function closeBook(){modal.classList.remove('open');}
+function bkDigits(t){t=(t||'').replace(/\D/g,'');if(t.length===10)t='1'+t;return t;}
+function confirmBook(){const nom=document.getElementById('bkNom').value.trim(),tel=document.getElementById('bkTel').value.trim(),k=bkServ.value;if(!nom||!tel||!k){alert('Completá nombre, teléfono y servicio');return;}const sv=SVCS[k];const fecha=document.getElementById('bkFecha').value,hora=document.getElementById('bkHora').value||'--:--';try{const d=JSON.parse(localStorage.getItem('bb-crm')||'[]');d.push({id:Date.now(),nombre:nom,telefono:tel,servicio:sv[0],precio:sv[1],fecha,hora,estado:'Pendiente'});localStorage.setItem('bb-crm',JSON.stringify(d));}catch(e){}
+closeBook();const msg='Hola Beauty Bar USA, quiero reservar:\n• Servicio: '+sv[0]+' ($'+sv[1]+')\n• Fecha: '+fecha+'\n• Hora: '+hora+'\n• Nombre: '+nom+'\n• Tel: '+tel;window.open('https://wa.me/'+bkDigits(tel)+'?text='+encodeURIComponent(msg),'_blank');}
+document.addEventListener('click',e=>{const a=e.target.closest('a[data-wa]');if(a){e.preventDefault();openBook(a.getAttribute('data-wa'));}});
 </script>
 </body>
 </html>

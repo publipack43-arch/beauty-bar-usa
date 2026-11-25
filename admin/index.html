@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Beauty Bar USA - Admin CRM</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;font-family:'Segoe UI',sans-serif}
+body{background:#E6D9FF;min-height:100vh}
+header{background:#4B2E6B;color:#fff;padding:15px 20px;display:flex;justify-content:space-between;align-items:center;position:sticky;top:0;z-index:50;flex-wrap:wrap;gap:10px}
+header .logo{font-size:20px;font-weight:800}
+header .logo span{color:#FF9EC6}
+header button{background:#FF9EC6;color:#4B2E6B;border:none;padding:8px 16px;border-radius:20px;font-weight:800;cursor:pointer;font-size:14px}
+.wrap{max-width:1000px;margin:auto;padding:20px}
+/* LOGIN */
+#login{min-height:80vh;display:flex;align-items:center;justify-content:center}
+#login .box{background:#fff;border-radius:20px;padding:35px 30px;width:100%;max-width:380px;text-align:center;box-shadow:0 10px 30px rgba(75,46,107,.15)}
+#login h1{color:#4B2E6B;font-size:26px;margin-bottom:6px}
+#login p{color:#666;font-size:14px;margin-bottom:20px}
+#login input{width:100%;padding:13px 15px;border:2px solid #E6D9FF;border-radius:12px;font-size:16px;margin-bottom:14px;outline:none}
+#login input:focus{border-color:#4B2E6B}
+#login button{width:100%;background:#4B2E6B;color:#fff;border:none;padding:13px;border-radius:12px;font-weight:800;font-size:16px;cursor:pointer}
+#login .err{color:#d33;font-size:13px;min-height:18px;margin-top:8px}
+/* STATS */
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:15px;margin-bottom:20px}
+.stat{background:#fff;border-radius:18px;padding:20px;text-align:center;box-shadow:0 5px 15px rgba(0,0,0,.06)}
+.stat .num{font-size:32px;font-weight:800;color:#4B2E6B}
+.stat .lbl{color:#888;font-size:13px;font-weight:700;text-transform:uppercase;margin-top:4px}
+/* TOOLBAR */
+.toolbar{display:flex;gap:10px;margin-bottom:15px;flex-wrap:wrap}
+.toolbar input{flex:1;min-width:200px;padding:12px 15px;border:2px solid #E6D9FF;border-radius:12px;font-size:15px;outline:none}
+.toolbar input:focus{border-color:#4B2E6B}
+.btn-new{background:#FF9EC6;color:#4B2E6B;border:none;padding:12px 20px;border-radius:12px;font-weight:800;cursor:pointer;font-size:15px;white-space:nowrap}
+/* LIST */
+.cita{background:#fff;border-radius:18px;padding:18px;margin-bottom:14px;box-shadow:0 5px 15px rgba(0,0,0,.06);display:flex;flex-wrap:wrap;gap:12px;align-items:center}
+.cita .info{flex:1;min-width:220px}
+.cita .nom{font-size:18px;font-weight:800;color:#4B2E6B}
+.cita .det{font-size:14px;color:#555;margin-top:4px;line-height:1.6}
+.cita .det b{color:#4B2E6B}
+.badge{display:inline-block;padding:4px 12px;border-radius:20px;font-size:12px;font-weight:800;margin-top:6px}
+.b-pend{background:#FFF3CD;color:#8a6d00}
+.b-conf{background:#E6D9FF;color:#4B2E6B}
+.b-aten{background:#D4F8E8;color:#128C3A}
+.b-canc{background:#FDE2E2;color:#b00}
+.actions{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.actions select{padding:9px 10px;border:2px solid #E6D9FF;border-radius:10px;font-weight:700;color:#4B2E6B;background:#fff;cursor:pointer}
+.wabtn{width:42px;height:42px;border-radius:50%;border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;text-decoration:none}
+.wabtn svg{width:22px;height:22px}
+.waconf{background:linear-gradient(145deg,#2FE06B,#128C3A)}
+.warem{background:linear-gradient(145deg,#4B2E6B,#7B4FA6)}
+.empty{text-align:center;color:#888;padding:50px 20px;font-size:15px}
+/* MODAL */
+.modal{position:fixed;inset:0;background:rgba(40,20,60,.5);display:none;align-items:center;justify-content:center;z-index:100;padding:15px}
+.modal.open{display:flex}
+.modal .box{background:#fff;border-radius:20px;padding:25px;width:100%;max-width:420px;max-height:90vh;overflow:auto}
+.modal h2{color:#4B2E6B;font-size:22px;margin-bottom:15px;text-align:center}
+.modal label{display:block;font-size:13px;font-weight:700;color:#555;margin:10px 0 4px}
+.modal input,.modal select{width:100%;padding:11px 13px;border:2px solid #E6D9FF;border-radius:10px;font-size:15px;outline:none}
+.modal input:focus,.modal select:focus{border-color:#4B2E6B}
+.modal .row{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.modal .btns{display:flex;gap:10px;margin-top:18px}
+.modal .btns button{flex:1;padding:12px;border:none;border-radius:12px;font-weight:800;font-size:15px;cursor:pointer}
+.modal .cancel{background:#eee;color:#555}
+.modal .save{background:#4B2E6B;color:#fff}
+</style>
+</head>
+<body>
+<div id="login"><div class="box"><h1>BEAUTY BAR <span style="color:#FF9EC6">ADMIN</span></h1><p>Panel de gestión de citas</p><input type="password" id="pass" placeholder="Contraseña" onkeydown="if(event.key==='Enter')login()"><button onclick="login()">Entrar</button><div class="err" id="lerr"></div></div></div>
+<div id="app" style="display:none">
+<header><div class="logo">BEAUTY BAR <span>ADMIN</span></div><button onclick="logout()">Salir</button></header>
+<div class="wrap">
+<div class="stats">
+<div class="stat"><div class="num" id="sHoy">0</div><div class="lbl">Citas de hoy</div></div>
+<div class="stat"><div class="num" id="sSemana">0</div><div class="lbl">Esta semana</div></div>
+<div class="stat"><div class="num" id="sTotal">$0</div><div class="lbl">Total a cobrar</div></div>
+</div>
+<div class="toolbar"><input type="text" id="q" placeholder="Buscar por nombre o teléfono..." oninput="render()"><button class="btn-new" onclick="openModal()">+ Nueva cita</button></div>
+<div id="lista"></div>
+</div>
+</div>
+<div class="modal" id="modal"><div class="box"><h2>Nueva cita</h2>
+<label>Nombre</label><input id="fNom" placeholder="Nombre de la clienta">
+<label>Teléfono (WhatsApp)</label><input id="fTel" placeholder="Ej: 3051234567">
+<label>Servicio</label><select id="fServ"><option>Extensiones Clásicas - $65</option><option>Volumen Híbrido - $85</option><option>Lifting de Pestañas - $55</option><option>Manicure + Gel - $45</option><option>Acrílicas - $70</option><option>Diseño de Cejas - $35</option><option>Laminado - $60</option></select>
+<div class="row"><div><label>Fecha</label><input type="date" id="fFecha"></div><div><label>Hora</label><input type="time" id="fHora"></div></div>
+<div class="btns"><button class="cancel" onclick="closeModal()">Cancelar</button><button class="save" onclick="saveCita()">Guardar cita</button></div>
+</div></div>
+<script>
+const PASS='beauty2026';
+const KEY='bb-crm';
+const ICON_CONFIRM='<svg viewBox="0 0 24 24" fill="white"><path d="M9 16.2L4.8 12l-1.4 1.4L9 19 21 7l-1.4-1.4z"/></svg>';
+const ICON_REMIND='<svg viewBox="0 0 24 24" fill="white"><path d="M12 22a2.5 2.5 0 0 0 2.45-2h-4.9A2.5 2.5 0 0 0 12 22zm7-6v-5a7 7 0 0 0-5-6.7V4a2 2 0 1 0-4 0v.3A7 7 0 0 0 5 11v5l-2 2v1h18v-1l-2-2z"/></svg>';
+function getData(){try{return JSON.parse(localStorage.getItem(KEY))||[]}catch(e){return[]}}
+function setData(d){localStorage.setItem(KEY,JSON.stringify(d))}
+function seed(){if(!localStorage.getItem(KEY)){const t=new Date();const d=t.toISOString().slice(0,10);const m=new Date(t);m.setDate(m.getDate()+2);setData([
+{id:1,nombre:'Maria Gonzalez',telefono:'3055551234',servicio:'Extensiones Clásicas',precio:65,fecha:d,hora:'10:00',estado:'Confirmada'},
+{id:2,nombre:'Jessica Lopez',telefono:'7865559876',servicio:'Volumen Híbrido',precio:85,fecha:d,hora:'14:30',estado:'Pendiente'},
+{id:3,nombre:'Ana Perez',telefono:'3055554321',servicio:'Manicure + Gel',precio:45,fecha:m.toISOString().slice(0,10),hora:'11:00',estado:'Pendiente'},
+{id:4,nombre:'Carla Ruiz',telefono:'7865552468',servicio:'Lifting de Pestañas',precio:55,fecha:m.toISOString().slice(0,10),hora:'16:00',estado:'Confirmada'}
+]);}}
+function login(){if(document.getElementById('pass').value===PASS){sessionStorage.setItem('bb-admin','1');enter();}else{document.getElementById('lerr').textContent='Contraseña incorrecta';}}
+function logout(){sessionStorage.removeItem('bb-admin');location.reload();}
+function enter(){seed();document.getElementById('login').style.display='none';document.getElementById('app').style.display='block';document.getElementById('fFecha').value=new Date().toISOString().slice(0,10);render();}
+if(sessionStorage.getItem('bb-admin'))enter();
+function digits(t){t=(t||'').replace(/\D/g,'');if(t.length===10)t='1'+t;return t;}
+function waMsg(c,tipo){const f=c.fecha?new Date(c.fecha+'T12:00:00').toLocaleDateString('es-US',{weekday:'long',day:'numeric',month:'long'}):'';if(tipo==='conf')return 'Hola '+c.nombre+', te confirmamos tu cita de '+c.servicio+' el '+f+' a las '+c.hora+' ✨ Beauty Bar USA';return 'Hola '+c.nombre+', te recordamos tu cita de '+c.servicio+' el '+f+' a las '+c.hora+'. ¡Te esperamos! 💜 Beauty Bar USA';}
+function waLink(c,tipo){return 'https://wa.me/'+digits(c.telefono)+'?text='+encodeURIComponent(waMsg(c,tipo));}
+function render(){const q=(document.getElementById('q').value||'').toLowerCase();const data=getData().filter(c=>!q||(c.nombre+' '+c.telefono).toLowerCase().includes(q));const hoy=new Date().toISOString().slice(0,10);const en7=new Date(Date.now()+7*864e5).toISOString().slice(0,10);
+let nh=0,nw=0,tot=0;getData().forEach(c=>{if(c.estado!=='Cancelada')tot+=+c.precio||0;if(c.fecha===hoy)nh++;if(c.fecha>=hoy&&c.fecha<=en7)nw++;});
+document.getElementById('sHoy').textContent=nh;document.getElementById('sSemana').textContent=nw;document.getElementById('sTotal').textContent='$'+tot;
+const L=document.getElementById('lista');
+if(!data.length){L.innerHTML='<div class="empty">No hay citas que mostrar</div>';return;}
+L.innerHTML=data.map(c=>`<div class="cita"><div class="info"><div class="nom">${c.nombre}</div><div class="det"><b>${c.servicio}</b> • $${c.precio}<br>📅 ${c.fecha} • 🕐 ${c.hora}<br>📱 ${c.telefono}</div><span class="badge b-${c.estado==='Pendiente'?'pend':c.estado==='Confirmada'?'conf':c.estado==='Atendida'?'aten':'canc'}">${c.estado}</span></div><div class="actions"><select onchange="setEstado(${c.id},this.value)">${['Pendiente','Confirmada','Atendida','Cancelada'].map(s=>`<option ${s===c.estado?'selected':''}>${s}</option>`).join('')}</select><a class="wabtn waconf" href="${waLink(c,'conf')}" target="_blank" title="Confirmar por WhatsApp">${ICON_CONFIRM}</a><a class="wabtn warem" href="${waLink(c,'rem')}" target="_blank" title="Enviar recordatorio">${ICON_REMIND}</a></div></div>`).join('');}
+function setEstado(id,v){const d=getData();const c=d.find(x=>x.id===id);if(c){c.estado=v;setData(d);render();}}
+function openModal(){document.getElementById('modal').classList.add('open');}
+function closeModal(){document.getElementById('modal').classList.remove('open');}
+function saveCita(){const nom=document.getElementById('fNom').value.trim(),tel=document.getElementById('fTel').value.trim();if(!nom||!tel){alert('Nombre y teléfono son obligatorios');return;}const serv=document.getElementById('fServ').value;const precio=parseInt(serv.match(/\$(\d+)/)[1]);const d=getData();d.push({id:Date.now(),nombre:nom,telefono:tel,servicio:serv.replace(/\s*-\s*\$\d+$/,''),precio,fecha:document.getElementById('fFecha').value,hora:document.getElementById('fHora').value||'--:--',estado:'Pendiente'});setData(d);closeModal();document.getElementById('fNom').value='';document.getElementById('fTel').value='';render();}
+document.querySelector('.modal').addEventListener('click',e=>{if(e.target.classList.contains('modal'))closeModal();});
+</script>
+</body>
+</html>
